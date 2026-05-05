@@ -12,13 +12,15 @@ target_sources(ImageStitching
     PRIVATE
         src/main.cpp
         src/image.cpp
+        src/harrisCorner.cpp
 
     PUBLIC
         FILE_SET HEADERS
         BASE_DIRS
             src
         FILES
-            src/image.hpp
+            src/image.h
+            src/harrisCorner.h
 
 )
 

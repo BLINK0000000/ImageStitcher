@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Eigen/Dense"
-#include "image.hpp"
+#include "image.h"
 
 
 int main(){
@@ -12,5 +12,6 @@ int main(){
 
     std::cout << m << std::endl;
 
+    
 
 }
