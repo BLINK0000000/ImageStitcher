@@ -3,5 +3,5 @@
 
 Eigen::MatrixXd HarrisCorner::computeCornerScores(ImageDerivatives& imageDerivative)
 {
-
+    return;
 }

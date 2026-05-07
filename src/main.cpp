@@ -1,17 +1,16 @@
 #include <iostream>
-#include "Eigen/Dense"
+#include "Eigen/Dense" 
 #include "image.h"
+#include "filepaths.h"
 
 
 int main(){
-    Eigen::MatrixXd m(2, 2);
-    m(0, 0) = 3;
-    m(1, 0) = 2.5;
-    m(0, 1) = -1;
-    m(1, 1) = m(1, 0) + m(0, 1);
+    
+    Image leftImage(fp::leftImagePath.c_str());
 
-    std::cout << m << std::endl;
+    leftImage.checkImage(fp::leftImageOutTestPath.c_str());
 
     
+    return 0;
 
 }

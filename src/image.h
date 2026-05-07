@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "Eigen/Core"
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 class Image{
@@ -11,11 +10,25 @@ class Image{
         Image(const char* imagePath); // constructor
         ~Image(); //destructor
         Image(const Image& image); //copy constructor
-        bool filter();
-        bool imageDerivatives();
-        // maybe compute corners as a non member function and instead change this to getCorners which calls the corner calcs function
+        Image& operator=(const Image& image); // copy assignment operator
+        Image(Image&& image) noexcept; // move constructor
+        Image& operator=(Image&& image); // move assignment operator
+
+        enum class FilterType{
+            mean,
+            median,
+            gaussian,
+        };
+
+        void checkImage(const char* outputPath);
+
+        Image& filter(FilterType filterToUse);
         
+        bool imageDerivatives();
+        // maybe compute corners as a non member function and instead change this to getCorners which calls the corner calcs function     
         bool getCorners();
+
+       
 
         // get corners function
         // nms
@@ -27,9 +40,9 @@ class Image{
         unsigned char* m_imageData;
         int m_height;
         int m_width;
-        int m_imageChannels;
+        int m_channels;
 
-        Eigen::MatrixXd m_grayImageMatrix;
+        Eigen::MatrixXi m_grayImageMatrix;
         // use reserve with the total number of pixels
         // then use push to add corners and shrink to fit after 
         std::vector<int> m_cornerList;
@@ -37,11 +50,6 @@ class Image{
         // std::vector<int> m_bestMatchingCorners;
         // std::vector<int> m_secondBestMatchingCorners;
 
-        // maybe do inheritance cause i need filter function
-        struct m_imageDerivative {
-            Eigen::MatrixXd ix;
-            Eigen::MatrixXd iy;
-        };
 
           
         
