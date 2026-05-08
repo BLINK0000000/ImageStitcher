@@ -28,16 +28,20 @@ class Image{
         // maybe compute corners as a non member function and instead change this to getCorners which calls the corner calcs function     
         bool getCorners();
 
-       
 
         // get corners function
         // nms
+
+
+        /*Testing Methods*/
+        void checkImage(const char* outputPath, unsigned char* data); // this is for outputting gray image for testing, probably bad practice but this is easiest for now
         
 
 
 
     private:
         unsigned char* m_imageData;
+        unsigned char* m_grayImageData;
         int m_height;
         int m_width;
         int m_channels;
@@ -49,12 +53,6 @@ class Image{
         // std::vector<int> m_matchingCorners;
         // std::vector<int> m_bestMatchingCorners;
         // std::vector<int> m_secondBestMatchingCorners;
-
-
-          
-        
-
-
 
 };
 

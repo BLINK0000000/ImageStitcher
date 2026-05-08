@@ -11,4 +11,5 @@ namespace fp
     
     inline const std::filesystem::path leftImageOutTestPath = testsDir / "images/leftOutTest.png";
     inline const std::filesystem::path rightImageOutTestPath = testsDir / "images/rightOutTest.png";
+
 }
