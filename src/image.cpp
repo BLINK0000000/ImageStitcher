@@ -54,7 +54,7 @@ Image::Image(const char* imagePath)
         /*
             Image data is stored in memory like: row,col where col is r,g,b so row0: r0, g0, b0, row0: r1, g1, b1. (row major order)
             Here we get grayscale image
-        */
+        */  
         for (unsigned char* p{m_imageData}, *pg{grayImageData}; p != m_imageData + imageSize; p += m_channels, pg += grayChannels) {
             *pg = static_cast<uint8_t>((*p + *(p + 1) + *(p + 2)) / 3.0);
             
@@ -63,13 +63,15 @@ Image::Image(const char* imagePath)
             }
         }
 
+        m_grayImageMatrix.resize(m_width, m_height);
+        m_grayImageMatrix = Eigen::Map<Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>, 0>(grayImageData, m_width, m_height);
+
         // Testing output, in reality, gray pixels will be mapped to matrix
         this->checkImage((std::filesystem::current_path().parent_path() /= "tests/images/grayLeftTest.png").c_str(), grayImageData);
+
     }
 
     delete[] grayImageData;
-
-
 }
 
 // Destructor

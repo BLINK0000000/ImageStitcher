@@ -41,12 +41,11 @@ class Image{
 
     private:
         unsigned char* m_imageData;
-        unsigned char* m_grayImageData;
         int m_height;
         int m_width;
         int m_channels;
 
-        Eigen::MatrixXi m_grayImageMatrix;
+        Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> m_grayImageMatrix;
         // use reserve with the total number of pixels
         // then use push to add corners and shrink to fit after 
         std::vector<int> m_cornerList;
