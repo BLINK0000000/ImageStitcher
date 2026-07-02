@@ -22,7 +22,7 @@ class Image{
 
         void checkImage(const char* outputPath);
 
-        Image& filter(FilterType filterToUse);
+        Image filter(FilterType filterToUse);
         
         bool imageDerivatives();
         // maybe compute corners as a non member function and instead change this to getCorners which calls the corner calcs function     

@@ -173,20 +173,44 @@ void Image::checkImage(const char* outputPath, unsigned char* data)
 Filter the image based on input enum of filter types (mean, median, gaussian)
 and allowing member function chaining to filter many times.
 */
-Image& Image::filter(FilterType filterToUse)
+Image Image::filter(FilterType filterToUse)
 {
-    return *this;
+    Image filteredImg(*this);
+
+    switch(filterToUse){
+
+        case FilterType::mean:
+            // create kernal
+            break;
+        case FilterType::gaussian:
+            // kernal
+            break;
+        case FilterType::median:
+            break;
+    }
+    
+    
+    boundaryPad(filteredImg.m_grayImageMatrix);
+
+    return filteredImg;
 }
 
 /*
     Helper Functions
 */
 
-// Loop through image data memory and copy to matrix format
-static void transferToGrayMatrix()
+static void boundaryPad(Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& imgMat)
 {
 
+    Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> paddedImg{};
+
+    paddedImg.resize(imgMat.rows() + 2 , imgMat.cols() + 2);
+
+
+    //TODO copy over block of first row to first row of padded, then first col
+
 }
+
 
 
 
