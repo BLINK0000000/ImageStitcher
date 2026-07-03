@@ -205,13 +205,13 @@ Image Image::filter(FilterType filterToUse)
     Image filteredImg(*this);
     ImageMatrix paddedImg{};
     Eigen::Matrix3f kernal; // 3x3 kernal
-    float kernalConstant{1.0f / 9.0f};
+    float meanConstant{1.0f / 9.0f};
 
     switch(filterToUse){
 
         case FilterType::mean:
             
-            kernal.setConstant(kernalConstant);
+            kernal.setConstant(meanConstant);
 
             break;
         case FilterType::gaussian:
@@ -224,24 +224,46 @@ Image Image::filter(FilterType filterToUse)
     
     boundaryPad(filteredImg.m_grayImageMatrix, paddedImg);
 
+    // 
     size_t ri{};
     size_t rj{};
-    float sum{};
     size_t ki{};
     size_t kj{};
 
+    float sum{};
+
     ri = 0;
-    for (size_t i{0}; i < paddedImg.rows() - 1; ++i)
+    for (size_t i{1}; i < paddedImg.rows() - 1; ++i)
     {
         rj = 0;
 
-        for (size_t j{0}; j < paddedImg.cols() - 1; ++j)
+        for (size_t j{1}; j < paddedImg.cols() - 1; ++j)
         {
             sum = 0;
             ki = 0;
 
+            for (size_t k{i - 1}; k <= i + 1; ++k)
+            {
+                kj = 0;
+
+                for (size_t m{j - 1}; m <= j + 1; ++m)
+                {
+                    sum = sum + paddedImg(k, m) * kernal(ki, kj);
+
+                    ++kj;
+                }
+
+                ++ki;
+            }
+
+            filteredImg.m_grayImageMatrix(ri, rj) = sum;
+
+            ++rj;
+
             
         }
+
+        ++ri;
     }
 
     return filteredImg;

@@ -8,9 +8,11 @@ int main(){
     
     Image leftImage(fp::leftImagePath.c_str());
 
-    leftImage.checkImage(fp::leftImageOutTestPath.c_str());
+    // leftImage.checkImage(fp::leftImageOutTestPath.c_str());
 
-    leftImage.filter(Image::FilterType::mean);
+    Image filteredImage = leftImage.filter(Image::FilterType::mean);
+
+    filteredImage.checkImage(fp::leftImageOutTestPath.c_str());
     
     return 0;
 
