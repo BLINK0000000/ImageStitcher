@@ -10,6 +10,7 @@ int main(){
 
     leftImage.checkImage(fp::leftImageOutTestPath.c_str());
 
+    leftImage.filter(Image::FilterType::mean);
     
     return 0;
 

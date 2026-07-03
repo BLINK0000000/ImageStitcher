@@ -12,6 +12,33 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+// Type defs, make this it's own header
+typedef Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> ImageMatrix;
+
+/*
+    Helper Functions
+*/
+static ImageMatrix boundaryPad(Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& imgMat, ImageMatrix& paddedImg)
+{
+
+    paddedImg.resize(imgMat.rows() + 2 , imgMat.cols() + 2);
+    paddedImg.setZero();
+
+
+    paddedImg.block<1, Eigen::Dynamic>(0, 1, 1, imgMat.cols()) = imgMat.topRows(1);
+    paddedImg.block<Eigen::Dynamic, 1>(1, 0, imgMat.rows(), 1) = imgMat.leftCols(1); 
+    paddedImg.block<1, Eigen::Dynamic>(paddedImg.rows() - 1, 1, 1, imgMat.cols()) = imgMat.bottomRows(1); 
+    paddedImg.block<Eigen::Dynamic, 1>(1, paddedImg.cols() - 1, imgMat.rows(), 1) = imgMat.rightCols(1);
+    
+    paddedImg(0, 0) = imgMat(0, 0);
+    paddedImg(0, paddedImg.cols() - 1) = imgMat(0, imgMat.cols() - 1);
+    paddedImg(paddedImg.rows() - 1, 0) = imgMat(imgMat.rows() - 1, 0);
+    paddedImg(paddedImg.rows() - 1, paddedImg.cols() - 1) = imgMat(imgMat.rows() - 1, imgMat.cols() - 1);
+
+    paddedImg.block<Eigen::Dynamic, Eigen::Dynamic>(1, 1, imgMat.rows(), imgMat.cols()) = imgMat;
+
+}
+
 
 // Constructor
 Image::Image(const char* imagePath)
@@ -176,11 +203,16 @@ and allowing member function chaining to filter many times.
 Image Image::filter(FilterType filterToUse)
 {
     Image filteredImg(*this);
+    ImageMatrix paddedImg{};
+    Eigen::Matrix3f kernal; // 3x3 kernal
+    float kernalConstant{1.0f / 9.0f};
 
     switch(filterToUse){
 
         case FilterType::mean:
-            // create kernal
+            
+            kernal.setConstant(kernalConstant);
+
             break;
         case FilterType::gaussian:
             // kernal
@@ -190,26 +222,33 @@ Image Image::filter(FilterType filterToUse)
     }
     
     
-    boundaryPad(filteredImg.m_grayImageMatrix);
+    boundaryPad(filteredImg.m_grayImageMatrix, paddedImg);
+
+    size_t ri{};
+    size_t rj{};
+    float sum{};
+    size_t ki{};
+    size_t kj{};
+
+    ri = 0;
+    for (size_t i{0}; i < paddedImg.rows() - 1; ++i)
+    {
+        rj = 0;
+
+        for (size_t j{0}; j < paddedImg.cols() - 1; ++j)
+        {
+            sum = 0;
+            ki = 0;
+
+            
+        }
+    }
 
     return filteredImg;
 }
 
-/*
-    Helper Functions
-*/
-
-static void boundaryPad(Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& imgMat)
-{
-
-    Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> paddedImg{};
-
-    paddedImg.resize(imgMat.rows() + 2 , imgMat.cols() + 2);
 
 
-    //TODO copy over block of first row to first row of padded, then first col
-
-}
 
 
 
