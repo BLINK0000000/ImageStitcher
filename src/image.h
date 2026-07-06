@@ -20,7 +20,8 @@ class Image{
             gaussian,
         };
 
-        void checkImage(const char* outputPath);
+        void checkImage(const char* output);
+        void checkGrayImage(const char* output);
 
         Image filter(FilterType filterToUse);
         

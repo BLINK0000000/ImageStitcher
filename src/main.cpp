@@ -8,17 +8,12 @@ int main(){
     
     Image leftImage("leftTest.png");
 
-    Image testImage(leftImage);
-
     // Change this so image name path can be specified here and function will automatically join them
-    testImage.checkImage("testImage.png");
     leftImage.checkImage("leftTest.png");
 
-    // leftImage.checkImage(fp::leftImageOutTestPath.c_str());
+    Image filteredImage = leftImage.filter(Image::FilterType::gaussian);
 
-    // Image filteredImage = leftImage.filter(Image::FilterType::gaussian);
-
-    // filteredImage.checkImage(fp::leftImageOutTestPath.c_str());
+    filteredImage.checkGrayImage("filteredImage.png");
     
     return 0;
 

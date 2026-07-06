@@ -100,10 +100,6 @@ Image::Image(const char* imageName)
         m_grayImageMatrix = Eigen::Map<Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>, 0>(grayImageData, m_height, m_width);
 
         delete[] grayImageData;
-
-        // Testing output, in reality, gray pixels will be mapped to matrix
-        uint8_t* grayMatrixData = m_grayImageMatrix.data();
-        this->checkImage((std::filesystem::current_path().parent_path() /= "tests/images/grayLeftTest.png").c_str(), grayMatrixData);
     } 
 }
 
@@ -114,17 +110,15 @@ Image::~Image()
 }
 
 // Copy constructor
-//TODO: FIX THIS
-//      Something is wrong here, copying image data needs to be looked at again.
 Image::Image(const Image& image)
 {
-    int imageSize{m_width * m_height * m_channels};
+    size_t imageSize{static_cast<size_t>(image.m_width * image.m_height * image.m_channels)};
 
-    m_imageData = (unsigned char*)malloc(imageSize * sizeof(unsigned char*));
+    m_imageData = (unsigned char*)malloc(imageSize * sizeof(unsigned char));
 
     // std::copy(m_imageData, m_imageData + imageSize, &image.m_imageData);
 
-    memcpy(m_imageData, &image.m_imageData, imageSize * sizeof(unsigned char*));
+    memcpy(m_imageData, image.m_imageData, imageSize * sizeof(unsigned char));
 
     m_height = image.m_height;
     m_width = image.m_width;
@@ -143,11 +137,11 @@ Image& Image::operator=(const Image& image)
 
         int imageSize{m_width * m_height * m_channels};
 
-        m_imageData = (unsigned char*)malloc(imageSize * sizeof(unsigned char*));
+        m_imageData = (unsigned char*)malloc(imageSize * sizeof(unsigned char));
 
         // std::copy(m_imageData, m_imageData + imageSize, &image.m_imageData);
 
-        memcpy(m_imageData, &image.m_imageData, imageSize * sizeof(unsigned char*));
+        memcpy(m_imageData, &image.m_imageData, imageSize * sizeof(unsigned char));
 
         m_height = image.m_height;
         m_width = image.m_width;
@@ -199,22 +193,26 @@ void Image::checkImage(const char* output)
     
 }
 
-void Image::checkImage(const char* output, unsigned char* data)
+void Image::checkGrayImage(const char* output)
 {
     const fp::path outputPath = fp::imageTestsDir / output;
 
-    stbi_write_png(outputPath.c_str(), m_width, m_height, 1, data, m_width);
+    // Testing output, in reality, gray pixels will be mapped to matrix
+    uint8_t* grayImageData = m_grayImageMatrix.data();
+
+    stbi_write_png(outputPath.c_str(), m_width, m_height, 1, grayImageData, m_width);
 }
 
 /*
 Filter the image based on input enum of filter types (mean, median, gaussian)
 and allowing member function chaining to filter many times.
 */
-Image Image::filter(FilterType filterToUse)
+Image Image::filter(FilterType filterToUse) // in future make filter also work on rgb
 {
-    Image filteredImg(*this);
+    Image filteredImg(*this); // at memcpy in copy constructor, something goes wrong
     ImageMatrix filteredGrayMatrix{};
     ImageMatrix paddedImg{};
+
     Eigen::Matrix3f kernal; // 3x3 kernal
     float meanConstant{1.0f / 9.0f};
     float gaussianConst{16.0f};
@@ -240,7 +238,6 @@ Image Image::filter(FilterType filterToUse)
     
     boundaryPad(filteredImg.m_grayImageMatrix, paddedImg);
 
-    // 
     size_t ri{};
     size_t rj{};
     size_t ki{};
