@@ -10,7 +10,9 @@ int main(){
 
     Image testImage(leftImage);
 
+    // Change this so image name path can be specified here and function will automatically join them
     testImage.checkImage(fp::leftImageOutTestPath.c_str());
+    leftImage.checkImage(fp::rightImageOutTestPath.c_str());
 
     // leftImage.checkImage(fp::leftImageOutTestPath.c_str());
 
