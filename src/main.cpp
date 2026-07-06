@@ -6,13 +6,13 @@
 
 int main(){
     
-    Image leftImage(fp::leftImagePath.c_str());
+    Image leftImage("leftTest.png");
 
     Image testImage(leftImage);
 
     // Change this so image name path can be specified here and function will automatically join them
-    testImage.checkImage(fp::leftImageOutTestPath.c_str());
-    leftImage.checkImage(fp::rightImageOutTestPath.c_str());
+    testImage.checkImage("testImage.png");
+    leftImage.checkImage("leftTest.png");
 
     // leftImage.checkImage(fp::leftImageOutTestPath.c_str());
 

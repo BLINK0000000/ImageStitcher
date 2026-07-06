@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <filesystem>
 #include "image.h"
+#include "filepaths.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -39,9 +40,12 @@ static void boundaryPad(Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Ei
 
 }
 
+/*
+    Class Definitions
+*/
 
 // Constructor
-Image::Image(const char* imagePath)
+Image::Image(const char* imageName)
     : m_imageData{nullptr}
     , m_height{} 
     , m_width{} 
@@ -51,8 +55,10 @@ Image::Image(const char* imagePath)
 {
     int originalChannels{};
 
+    const fp::path imagePath = fp::assetsDir / imageName;
+
     try {
-        m_imageData = stbi_load(imagePath, &m_width, &m_height, &originalChannels, m_channels);
+        m_imageData = stbi_load(imagePath.c_str(), &m_width, &m_height, &originalChannels, m_channels);
     
         if (m_imageData) {
 
@@ -186,16 +192,18 @@ Image& Image::operator=(Image&& image)
     return *this;
 }
 
-void Image::checkImage(const char* outputPath)
+void Image::checkImage(const char* output)
 {   
-
-    stbi_write_png(outputPath, m_width, m_height, m_channels, m_imageData, m_width * m_channels);
+    const fp::path outputPath = fp::imageTestsDir / output;
+    stbi_write_png(outputPath.c_str(), m_width, m_height, m_channels, m_imageData, m_width * m_channels);
     
 }
 
-void Image::checkImage(const char* outputPath, unsigned char* data)
+void Image::checkImage(const char* output, unsigned char* data)
 {
-    stbi_write_png(outputPath, m_width, m_height, 1, data, m_width);
+    const fp::path outputPath = fp::imageTestsDir / output;
+
+    stbi_write_png(outputPath.c_str(), m_width, m_height, 1, data, m_width);
 }
 
 /*
