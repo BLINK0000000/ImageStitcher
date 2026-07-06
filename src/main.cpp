@@ -3,9 +3,8 @@
 #include "image.h"
 #include "filepaths.h"
 
-
+//TODO make filter work with rgb images, not urgent can be done later but will make overall code structure and moduarity better
 int main(){
-    
     Image leftImage("leftTest.png");
 
     // Change this so image name path can be specified here and function will automatically join them

@@ -7,6 +7,9 @@
 
 class Image{
     public:
+        // Type defs, make this it's own header
+        typedef Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> ImageMatrix;
+
         Image(const char* imagePath); // constructor
         ~Image(); //destructor
         Image(const Image& image); //copy constructor
@@ -29,11 +32,6 @@ class Image{
         // maybe compute corners as a non member function and instead change this to getCorners which calls the corner calcs function     
         bool getCorners();
 
-
-        // get corners function
-        // nms
-
-
         /*Testing Methods*/
         void checkImage(const char* outputPath, unsigned char* data); // this is for outputting gray image for testing, probably bad practice but this is easiest for now
         
@@ -46,7 +44,7 @@ class Image{
         int m_width;
         int m_channels;
 
-        Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> m_grayImageMatrix;
+        ImageMatrix m_grayImageMatrix;
         // use reserve with the total number of pixels
         // then use push to add corners and shrink to fit after 
         std::vector<int> m_cornerList;

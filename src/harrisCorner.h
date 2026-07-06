@@ -2,6 +2,7 @@
 #define HARRIS_CORNER_H
 
 #include "Eigen/Core"
+#include "image.h"
 
 namespace HarrisCorner
 {
@@ -12,8 +13,9 @@ namespace HarrisCorner
 
     /*
         Computing the corner scores for a grayscale image matrix
-    */ 
-    Eigen::MatrixXd computeCornerScores(ImageDerivatives& imageDerivate);
+    */
+    ImageDerivatives computeImageDerivatives(Image img);
+    Eigen::MatrixXf computeCornerScores(ImageDerivatives& imageDerivate);
 }
 
 

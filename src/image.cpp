@@ -8,37 +8,15 @@
 #include <filesystem>
 #include "image.h"
 #include "filepaths.h"
+#include "helpers.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-// Type defs, make this it's own header
-typedef Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> ImageMatrix;
-
 /*
     Helper Functions
 */
-static void boundaryPad(Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& imgMat, ImageMatrix& paddedImg)
-{
-
-    paddedImg.resize(imgMat.rows() + 2 , imgMat.cols() + 2);
-    paddedImg.setZero();
-
-
-    paddedImg.block<1, Eigen::Dynamic>(0, 1, 1, imgMat.cols()) = imgMat.topRows(1);
-    paddedImg.block<Eigen::Dynamic, 1>(1, 0, imgMat.rows(), 1) = imgMat.leftCols(1); 
-    paddedImg.block<1, Eigen::Dynamic>(paddedImg.rows() - 1, 1, 1, imgMat.cols()) = imgMat.bottomRows(1); 
-    paddedImg.block<Eigen::Dynamic, 1>(1, paddedImg.cols() - 1, imgMat.rows(), 1) = imgMat.rightCols(1);
-    
-    paddedImg(0, 0) = imgMat(0, 0);
-    paddedImg(0, paddedImg.cols() - 1) = imgMat(0, imgMat.cols() - 1);
-    paddedImg(paddedImg.rows() - 1, 0) = imgMat(imgMat.rows() - 1, 0);
-    paddedImg(paddedImg.rows() - 1, paddedImg.cols() - 1) = imgMat(imgMat.rows() - 1, imgMat.cols() - 1);
-
-    paddedImg.block<Eigen::Dynamic, Eigen::Dynamic>(1, 1, imgMat.rows(), imgMat.cols()) = imgMat;
-
-}
 
 /*
     Class Definitions
@@ -226,17 +204,16 @@ Image Image::filter(FilterType filterToUse) // in future make filter also work o
 
         case FilterType::gaussian:
             
-
-            kernal << 1, 2, 1, 2, 4, 2, 1, 2, 1;
+            kernal << 1, 2, 1, 2, 4, 2, 1, 2, 1; // gaussian kernal
             kernal /= gaussianConst;
             break;
 
-        case FilterType::median:
+        case FilterType::median: // do this later
             break;
     }
     
     
-    boundaryPad(filteredImg.m_grayImageMatrix, paddedImg);
+    Helpers::boundaryPad(filteredImg.m_grayImageMatrix, paddedImg);
 
     size_t ri{};
     size_t rj{};
