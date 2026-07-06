@@ -18,7 +18,7 @@ typedef Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> I
 /*
     Helper Functions
 */
-static ImageMatrix boundaryPad(Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& imgMat, ImageMatrix& paddedImg)
+static void boundaryPad(Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& imgMat, ImageMatrix& paddedImg)
 {
 
     paddedImg.resize(imgMat.rows() + 2 , imgMat.cols() + 2);
@@ -108,6 +108,8 @@ Image::~Image()
 }
 
 // Copy constructor
+//TODO: FIX THIS
+//      Something is wrong here, copying image data needs to be looked at again.
 Image::Image(const Image& image)
 {
     int imageSize{m_width * m_height * m_channels};
@@ -203,20 +205,26 @@ and allowing member function chaining to filter many times.
 Image Image::filter(FilterType filterToUse)
 {
     Image filteredImg(*this);
+    ImageMatrix filteredGrayMatrix{};
     ImageMatrix paddedImg{};
     Eigen::Matrix3f kernal; // 3x3 kernal
     float meanConstant{1.0f / 9.0f};
+    float gaussianConst{16.0f};
 
     switch(filterToUse){
 
         case FilterType::mean:
-            
-            kernal.setConstant(meanConstant);
 
+            kernal.setConstant(meanConstant);
             break;
+
         case FilterType::gaussian:
-            // kernal
+            
+
+            kernal << 1, 2, 1, 2, 4, 2, 1, 2, 1;
+            kernal /= gaussianConst;
             break;
+
         case FilterType::median:
             break;
     }
@@ -231,6 +239,9 @@ Image Image::filter(FilterType filterToUse)
     size_t kj{};
 
     float sum{};
+
+    filteredGrayMatrix.resize(m_height, m_width);
+    filteredGrayMatrix.setZero();
 
     ri = 0;
     for (size_t i{1}; i < paddedImg.rows() - 1; ++i)
@@ -249,22 +260,18 @@ Image Image::filter(FilterType filterToUse)
                 for (size_t m{j - 1}; m <= j + 1; ++m)
                 {
                     sum = sum + paddedImg(k, m) * kernal(ki, kj);
-
                     ++kj;
                 }
-
                 ++ki;
             }
-
-            filteredImg.m_grayImageMatrix(ri, rj) = sum;
+            filteredGrayMatrix(ri, rj) = sum;
 
             ++rj;
-
-            
         }
-
         ++ri;
     }
+
+    filteredImg.m_grayImageMatrix = filteredGrayMatrix;
 
     return filteredImg;
 }

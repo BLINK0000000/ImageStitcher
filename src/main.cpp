@@ -8,11 +8,15 @@ int main(){
     
     Image leftImage(fp::leftImagePath.c_str());
 
+    Image testImage(leftImage);
+
+    testImage.checkImage(fp::leftImageOutTestPath.c_str());
+
     // leftImage.checkImage(fp::leftImageOutTestPath.c_str());
 
-    Image filteredImage = leftImage.filter(Image::FilterType::mean);
+    // Image filteredImage = leftImage.filter(Image::FilterType::gaussian);
 
-    filteredImage.checkImage(fp::leftImageOutTestPath.c_str());
+    // filteredImage.checkImage(fp::leftImageOutTestPath.c_str());
     
     return 0;
 
