@@ -3,6 +3,7 @@
 
 #include "Eigen/Core"
 #include "image.h"
+#include <vector>
 
 namespace HarrisCorner
 {
@@ -11,11 +12,18 @@ namespace HarrisCorner
         Eigen::MatrixXf iy;
     };
 
+    struct Corner{
+        size_t i;
+        size_t j;
+        float score;
+    };
+
     /*
         Computing the corner scores for a grayscale image matrix
     */
-    ImageDerivatives computeImageDerivatives(Image img);
-    Eigen::MatrixXf computeCornerScores(ImageDerivatives& imageDerivate);
+    ImageDerivatives computeImageDerivatives(Image& img);
+    std::vector<Corner> computeCornerScores(ImageDerivatives& imageDerivate);
+    void nonMaxSuppression(std::vector<int>& corners);
 }
 
 

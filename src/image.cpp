@@ -8,7 +8,6 @@
 #include <filesystem>
 #include "image.h"
 #include "filepaths.h"
-#include "helpers.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -182,15 +181,39 @@ void Image::checkGrayImage(const char* output)
 }
 
 /*
-Filter the image based on input enum of filter types (mean, median, gaussian)
-and allowing member function chaining to filter many times.
+    Create a padded image matrix from this image object
+*/
+Image::ImageMatrix Image::boundaryPad()
+{
+    Image::ImageMatrix paddedImg{}; // make it so the boundary padding function returns this, makes no sense it's created here
+    
+    paddedImg.resize(m_grayImageMatrix.rows() + 2 , m_grayImageMatrix.cols() + 2);
+    paddedImg.setZero();
+
+    paddedImg.block<1, Eigen::Dynamic>(0, 1, 1, m_grayImageMatrix.cols()) = m_grayImageMatrix.topRows(1);
+    paddedImg.block<Eigen::Dynamic, 1>(1, 0, m_grayImageMatrix.rows(), 1) = m_grayImageMatrix.leftCols(1); 
+    paddedImg.block<1, Eigen::Dynamic>(paddedImg.rows() - 1, 1, 1, m_grayImageMatrix.cols()) = m_grayImageMatrix.bottomRows(1); 
+    paddedImg.block<Eigen::Dynamic, 1>(1, paddedImg.cols() - 1, m_grayImageMatrix.rows(), 1) = m_grayImageMatrix.rightCols(1);
+    
+    paddedImg(0, 0) = m_grayImageMatrix(0, 0);
+    paddedImg(0, paddedImg.cols() - 1) = m_grayImageMatrix(0, m_grayImageMatrix.cols() - 1);
+    paddedImg(paddedImg.rows() - 1, 0) = m_grayImageMatrix(m_grayImageMatrix.rows() - 1, 0);
+    paddedImg(paddedImg.rows() - 1, paddedImg.cols() - 1) = m_grayImageMatrix(m_grayImageMatrix.rows() - 1, m_grayImageMatrix.cols() - 1);
+
+    paddedImg.block<Eigen::Dynamic, Eigen::Dynamic>(1, 1, m_grayImageMatrix.rows(), m_grayImageMatrix.cols()) = m_grayImageMatrix;
+
+    return paddedImg;
+}
+
+/*
+    Filter the image based on input enum of filter types (mean, median, gaussian)
+    and allowing member function chaining to filter many times.
 */
 Image Image::filter(FilterType filterToUse) // in future make filter also work on rgb
 {
-    Image filteredImg(*this); // at memcpy in copy constructor, something goes wrong
+    Image filteredImg(*this); 
     ImageMatrix filteredGrayMatrix{};
-    ImageMatrix paddedImg{};
-
+    
     Eigen::Matrix3f kernal; // 3x3 kernal
     float meanConstant{1.0f / 9.0f};
     float gaussianConst{16.0f};
@@ -213,11 +236,11 @@ Image Image::filter(FilterType filterToUse) // in future make filter also work o
     }
     
     
-    Helpers::boundaryPad(filteredImg.m_grayImageMatrix, paddedImg);
+    ImageMatrix paddedImg = filteredImg.boundaryPad();
 
-    size_t ri{};
+    size_t ri{}; // row index for resulting matrix
     size_t rj{};
-    size_t ki{};
+    size_t ki{}; // row index for kernal matrix
     size_t kj{};
 
     float sum{};

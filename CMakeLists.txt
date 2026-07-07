@@ -14,8 +14,7 @@ target_sources(ImageStitching
     PRIVATE
         src/main.cpp
         src/image.cpp
-        src/helpers.cpp
-        #src/harrisCorner.cpp
+        src/harrisCorner.cpp
 
     PUBLIC
         FILE_SET HEADERS
@@ -25,7 +24,6 @@ target_sources(ImageStitching
             src/image.h
             src/filepaths.h
             src/harrisCorner.h
-            src/helpers.h
 
 )
 

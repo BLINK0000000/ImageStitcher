@@ -23,21 +23,21 @@ class Image{
             gaussian,
         };
 
-        void checkImage(const char* output);
-        void checkGrayImage(const char* output);
+
+        ImageMatrix boundaryPad();
 
         Image filter(FilterType filterToUse);
         
-        bool imageDerivatives();
         // maybe compute corners as a non member function and instead change this to getCorners which calls the corner calcs function     
-        bool getCorners();
+        bool findCorners();
 
-        /*Testing Methods*/
-        void checkImage(const char* outputPath, unsigned char* data); // this is for outputting gray image for testing, probably bad practice but this is easiest for now
+        // Getters, Setters
         
 
-
-
+        /*Testing Methods*/
+        void checkImage(const char* output);
+        void checkGrayImage(const char* output);
+        
     private:
         unsigned char* m_imageData;
         int m_height;
