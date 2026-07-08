@@ -16,15 +16,17 @@
 // this makes it way more modular, can input both grayscale and rgb images instead of rgb only
 // will let me learn how inheritance and virtual functions work
 
+
+// on the pi this could be a template class, should be faster too
+
 class Image{
     public:
-        // Type defs, make this it's own header
-        typedef Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> ImageMatrix;
 
         Image(const char* imagePath); // constructor
         ~Image(); //destructor
         Image(const Image& image); //copy constructor
         Image& operator=(const Image& image); // copy assignment operator
+        
         Image(Image&& image) noexcept; // move constructor
         Image& operator=(Image&& image); // move assignment operator
 
@@ -34,19 +36,10 @@ class Image{
             gaussian,
         };
 
-
-        ImageMatrix boundaryPad();
-
-        Image filter(FilterType filterToUse);
-        
-        // maybe compute corners as a non member function and instead change this to getCorners which calls the corner calcs function     
-        bool findCorners();
-
-        // Getters, Setters
-        
+        virtual void filter(FilterType filterToUse) = 0;  
 
         /*Testing Methods*/
-        void checkImage(const char* output);
+        virtual void checkImage(const char* output);
         void checkGrayImage(const char* output);
         
     private:
@@ -54,13 +47,6 @@ class Image{
         int m_height;
         int m_width;
         int m_channels;
-
-        ImageMatrix m_grayImageMatrix;
-        // use reserve with the total number of pixels
-        // then use push to add corners and shrink to fit after
-        // ^^ do this on the pi, no need to do it here
-
-        std::vector<HarrisCorner::Corner> m_cornerList;
 
 };
 

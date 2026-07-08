@@ -12,7 +12,7 @@ namespace HarrisCorner
         Eigen::MatrixXf iy;
     };
 
-    struct Corner{
+    struct CornerInfo{
         size_t i;
         size_t j;
         float score;
@@ -22,7 +22,7 @@ namespace HarrisCorner
         Computing the corner scores for a grayscale image matrix
     */
     void computeImageDerivatives(Image& img, ImageDerivatives& derivatives);
-    void computeCornerScores(ImageDerivatives& imageDerivate, std::vector<Corner>& corners);
+    void computeCornerScores(ImageDerivatives& imageDerivate, std::vector<CornerInfo>& corners);
     void nonMaxSuppression(std::vector<int>& corners);
 }
 

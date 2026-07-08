@@ -22,6 +22,8 @@ target_sources(ImageStitching
             src
         FILES
             src/image.h
+            src/rgb.h
+            src/grayscale.h
             src/filepaths.h
             src/harrisCorner.h
 

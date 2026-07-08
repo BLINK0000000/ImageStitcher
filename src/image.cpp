@@ -27,8 +27,6 @@ Image::Image(const char* imageName)
     , m_height{} 
     , m_width{} 
     , m_channels{3}
-    , m_grayImageMatrix{} 
-    , m_cornerList{}
 {
     int originalChannels{};
 
@@ -73,8 +71,8 @@ Image::Image(const char* imageName)
             }
         }
 
-        m_grayImageMatrix.resize(m_height, m_width);
-        m_grayImageMatrix = Eigen::Map<Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>, 0>(grayImageData, m_height, m_width);
+        m_imgMatrix.resize(m_height, m_width);
+        m_imgMatrix = Eigen::Map<Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>, 0>(grayImageData, m_height, m_width);
 
         delete[] grayImageData;
     } 
@@ -100,7 +98,7 @@ Image::Image(const Image& image)
     m_height = image.m_height;
     m_width = image.m_width;
     m_channels = image.m_channels;
-    m_grayImageMatrix = image.m_grayImageMatrix;
+    m_imgMatrix = image.m_imgMatrix;
     m_cornerList = image.m_cornerList;
 
 }
@@ -121,7 +119,7 @@ Image& Image::operator=(const Image& image)
         m_height = image.m_height;
         m_width = image.m_width;
         m_channels = image.m_channels;
-        m_grayImageMatrix = image.m_grayImageMatrix;
+        m_imgMatrix = image.m_imgMatrix;
         m_cornerList = image.m_cornerList;
 
     }
@@ -134,14 +132,14 @@ Image::Image(Image&& image) noexcept
     , m_height{std::move(image.m_height)}
     , m_width{std::move(image.m_width)}
     , m_channels{std::move(image.m_channels)}
-    , m_grayImageMatrix{std::move(image.m_grayImageMatrix)}
+    , m_imgMatrix{std::move(image.m_imgMatrix)}
     , m_cornerList{std::move(image.m_cornerList)}
 {
     image.m_imageData = nullptr;
     image.m_height = 0;
     image.m_width = 0;
     image.m_channels = 3;
-    image.m_grayImageMatrix.setZero();
+    image.m_imgMatrix.setZero();
     image.m_cornerList.clear();
 }
 
@@ -154,7 +152,7 @@ Image& Image::operator=(Image&& image)
         m_height = std::move(image.m_height);
         m_width = std::move(image.m_width);
         m_channels = std::move(image.m_channels);
-        m_grayImageMatrix = std::move(image.m_grayImageMatrix);
+        m_imgMatrix = std::move(image.m_imgMatrix);
         m_cornerList = std::move(image.m_cornerList);
     }
 
@@ -165,7 +163,6 @@ void Image::checkImage(const char* output)
 {   
     const fp::path outputPath = fp::imageTestsDir / output;
     stbi_write_png(outputPath.c_str(), m_width, m_height, m_channels, m_imageData, m_width * m_channels);
-    
 }
 
 void Image::checkGrayImage(const char* output)
@@ -173,7 +170,7 @@ void Image::checkGrayImage(const char* output)
     const fp::path outputPath = fp::imageTestsDir / output;
 
     // Testing output, in reality, gray pixels will be mapped to matrix
-    uint8_t* grayImageData = m_grayImageMatrix.data();
+    uint8_t* grayImageData = m_imgMatrix.data();
 
     stbi_write_png(outputPath.c_str(), m_width, m_height, 1, grayImageData, m_width);
 }
@@ -185,20 +182,20 @@ Image::ImageMatrix Image::boundaryPad()
 {
     Image::ImageMatrix paddedImg{}; // make it so the boundary padding function returns this, makes no sense it's created here
     
-    paddedImg.resize(m_grayImageMatrix.rows() + 2 , m_grayImageMatrix.cols() + 2);
+    paddedImg.resize(m_imgMatrix.rows() + 2 , m_imgMatrix.cols() + 2);
     paddedImg.setZero();
 
-    paddedImg.block<1, Eigen::Dynamic>(0, 1, 1, m_grayImageMatrix.cols()) = m_grayImageMatrix.topRows(1);
-    paddedImg.block<Eigen::Dynamic, 1>(1, 0, m_grayImageMatrix.rows(), 1) = m_grayImageMatrix.leftCols(1); 
-    paddedImg.block<1, Eigen::Dynamic>(paddedImg.rows() - 1, 1, 1, m_grayImageMatrix.cols()) = m_grayImageMatrix.bottomRows(1); 
-    paddedImg.block<Eigen::Dynamic, 1>(1, paddedImg.cols() - 1, m_grayImageMatrix.rows(), 1) = m_grayImageMatrix.rightCols(1);
+    paddedImg.block<1, Eigen::Dynamic>(0, 1, 1, m_imgMatrix.cols()) = m_imgMatrix.topRows(1);
+    paddedImg.block<Eigen::Dynamic, 1>(1, 0, m_imgMatrix.rows(), 1) = m_imgMatrix.leftCols(1); 
+    paddedImg.block<1, Eigen::Dynamic>(paddedImg.rows() - 1, 1, 1, m_imgMatrix.cols()) = m_imgMatrix.bottomRows(1); 
+    paddedImg.block<Eigen::Dynamic, 1>(1, paddedImg.cols() - 1, m_imgMatrix.rows(), 1) = m_imgMatrix.rightCols(1);
     
-    paddedImg(0, 0) = m_grayImageMatrix(0, 0);
-    paddedImg(0, paddedImg.cols() - 1) = m_grayImageMatrix(0, m_grayImageMatrix.cols() - 1);
-    paddedImg(paddedImg.rows() - 1, 0) = m_grayImageMatrix(m_grayImageMatrix.rows() - 1, 0);
-    paddedImg(paddedImg.rows() - 1, paddedImg.cols() - 1) = m_grayImageMatrix(m_grayImageMatrix.rows() - 1, m_grayImageMatrix.cols() - 1);
+    paddedImg(0, 0) = m_imgMatrix(0, 0);
+    paddedImg(0, paddedImg.cols() - 1) = m_imgMatrix(0, m_imgMatrix.cols() - 1);
+    paddedImg(paddedImg.rows() - 1, 0) = m_imgMatrix(m_imgMatrix.rows() - 1, 0);
+    paddedImg(paddedImg.rows() - 1, paddedImg.cols() - 1) = m_imgMatrix(m_imgMatrix.rows() - 1, m_imgMatrix.cols() - 1);
 
-    paddedImg.block<Eigen::Dynamic, Eigen::Dynamic>(1, 1, m_grayImageMatrix.rows(), m_grayImageMatrix.cols()) = m_grayImageMatrix;
+    paddedImg.block<Eigen::Dynamic, Eigen::Dynamic>(1, 1, m_imgMatrix.rows(), m_imgMatrix.cols()) = m_imgMatrix;
 
     return paddedImg;
 }
@@ -274,7 +271,7 @@ Image Image::filter(FilterType filterToUse) // in future make filter also work o
         ++ri;
     }
 
-    filteredImg.m_grayImageMatrix = filteredGrayMatrix;
+    filteredImg.m_imgMatrix = filteredGrayMatrix;
 
     return filteredImg;
 }
@@ -283,22 +280,22 @@ Image Image::filter(FilterType filterToUse) // in future make filter also work o
     Find corners using harris corner
 */
 
-bool Image::findCorners()
-{
-    HarrisCorner::ImageDerivatives derivatives{};
+// bool Image::findCorners()
+// {
+//     HarrisCorner::ImageDerivatives derivatives{};
 
-    Image::ImageMatrix paddedImg = this->boundaryPad();
+//     Image::ImageMatrix paddedImg = this->boundaryPad();
 
-    derivatives.ix.resize(paddedImg.rows() - 2, paddedImg.cols() - 2); // padding is always 1 on each side
-    derivatives.iy.resize(paddedImg.rows() - 2, paddedImg.cols() - 2);
+//     derivatives.ix.resize(paddedImg.rows() - 2, paddedImg.cols() - 2); // padding is always 1 on each side
+//     derivatives.iy.resize(paddedImg.rows() - 2, paddedImg.cols() - 2);
 
-    derivatives.ix.setZero();
-    derivatives.iy.setZero();
+//     derivatives.ix.setZero();
+//     derivatives.iy.setZero();
 
-    HarrisCorner::computeImageDerivatives(paddedImg, derivatives);
+//     HarrisCorner::computeImageDerivatives(paddedImg, derivatives);
 
 
-}
+// }
 
 
 
