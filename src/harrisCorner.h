@@ -21,8 +21,8 @@ namespace HarrisCorner
     /*
         Computing the corner scores for a grayscale image matrix
     */
-    ImageDerivatives computeImageDerivatives(Image& img);
-    std::vector<Corner> computeCornerScores(ImageDerivatives& imageDerivate);
+    void computeImageDerivatives(Image& img, ImageDerivatives& derivatives);
+    void computeCornerScores(ImageDerivatives& imageDerivate, std::vector<Corner>& corners);
     void nonMaxSuppression(std::vector<int>& corners);
 }
 

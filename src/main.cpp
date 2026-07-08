@@ -15,10 +15,13 @@ int main(){
 
     filteredImage.checkGrayImage("filteredImage.png");
 
-    Image derivativeTest(filteredImage);
-
-    HarrisCorner::ImageDerivatives derv = HarrisCorner::computeImageDerivatives(derivativeTest);
-    std::vector<HarrisCorner::Corner> corners = HarrisCorner::computeCornerScores(derv);
+    if (filteredImage.findCorners())
+    {
+        std::cout << "Corners found" << std::endl;
+    }
+    else{
+        std::cout << "No corners in image" << std::endl;
+    }
 
     return 0;
 

@@ -116,8 +116,6 @@ Image& Image::operator=(const Image& image)
 
         m_imageData = (unsigned char*)malloc(imageSize * sizeof(unsigned char));
 
-        // std::copy(m_imageData, m_imageData + imageSize, &image.m_imageData);
-
         memcpy(m_imageData, &image.m_imageData, imageSize * sizeof(unsigned char));
 
         m_height = image.m_height;
@@ -279,6 +277,27 @@ Image Image::filter(FilterType filterToUse) // in future make filter also work o
     filteredImg.m_grayImageMatrix = filteredGrayMatrix;
 
     return filteredImg;
+}
+
+/*
+    Find corners using harris corner
+*/
+
+bool Image::findCorners()
+{
+    HarrisCorner::ImageDerivatives derivatives{};
+
+    Image::ImageMatrix paddedImg = this->boundaryPad();
+
+    derivatives.ix.resize(paddedImg.rows() - 2, paddedImg.cols() - 2); // padding is always 1 on each side
+    derivatives.iy.resize(paddedImg.rows() - 2, paddedImg.cols() - 2);
+
+    derivatives.ix.setZero();
+    derivatives.iy.setZero();
+
+    HarrisCorner::computeImageDerivatives(paddedImg, derivatives);
+
+
 }
 
 

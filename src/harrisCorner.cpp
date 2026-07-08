@@ -31,11 +31,8 @@ static void boundaryPad(Eigen::MatrixXf& derivative)
 }
 
 
-HarrisCorner::ImageDerivatives HarrisCorner::computeImageDerivatives(Image& img)
+void HarrisCorner::computeImageDerivatives(Image::ImageMatrix& paddedImg, ImageDerivatives& derivatives)
 {
-    HarrisCorner::ImageDerivatives derivatives{};
-    
-    Image::ImageMatrix paddedImg = img.boundaryPad();
 
     Eigen::Matrix3f vertSobelKernal{};
     Eigen::Matrix3f horzSobelKernal{};
@@ -45,12 +42,6 @@ HarrisCorner::ImageDerivatives HarrisCorner::computeImageDerivatives(Image& img)
 
     horzSobelKernal << 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0;
     horzSobelKernal /= 8.0f;
-
-    derivatives.ix.resize(paddedImg.rows() - 2, paddedImg.cols() - 2); // padding is always 1 on each side
-    derivatives.iy.resize(paddedImg.rows() - 2, paddedImg.cols() - 2);
-
-    derivatives.ix.setZero();
-    derivatives.iy.setZero();
 
     size_t ri{};
     size_t rj{};
@@ -90,18 +81,15 @@ HarrisCorner::ImageDerivatives HarrisCorner::computeImageDerivatives(Image& img)
         }
         ++ri;
     }
-
-    return derivatives;
 }
 
-std::vector<HarrisCorner::Corner> HarrisCorner::computeCornerScores(HarrisCorner::ImageDerivatives& derivatives)
+void HarrisCorner::computeCornerScores(HarrisCorner::ImageDerivatives& derivatives, std::vector<Corner>& corners)
 {
     Eigen::Matrix2f Hmat{};
     float alpha{0.04};
     float threshold{pow(10, 6)};
 
     Corner cornerInfo {};
-    std::vector<Corner> corners{};
     float cornerScore{};
 
     Eigen::MatrixXf ixSq{};
@@ -164,7 +152,5 @@ std::vector<HarrisCorner::Corner> HarrisCorner::computeCornerScores(HarrisCorner
         }
         ++ri;
     }
-
-    return corners;
 }
 
