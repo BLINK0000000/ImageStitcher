@@ -1,7 +1,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include <vector>
+#include <string>
 #include "Eigen/Core"
 #include "stb_image.h"
 #include "harrisCorner.h"
@@ -22,9 +22,10 @@
 class Image{
     public:
 
-        Image(const char* imagePath); // constructor
+        Image(const char* imageName); // constructor
         ~Image(); //destructor
         Image(const Image& image); //copy constructor
+        Image(Image& image, const int channels = 0, const unsigned char* imgData = nullptr); // copy constructor for conversion
         Image& operator=(const Image& image); // copy assignment operator
         
         Image(Image&& image) noexcept; // move constructor
@@ -36,18 +37,18 @@ class Image{
             gaussian,
         };
 
-        virtual void filter(FilterType filterToUse) = 0;  
+        // virtual void filter(FilterType filterToUse) = 0;  
 
         /*Testing Methods*/
-        virtual void checkImage(const char* output);
-        void checkGrayImage(const char* output);
+        void outputImage(const char* output);
+        // void checkGrayImage(const char* output);
         
-    private:
+    protected:
         unsigned char* m_imageData;
         int m_height;
         int m_width;
         int m_channels;
-
+        const std::string m_imgName;
 };
 
 #endif

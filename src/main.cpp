@@ -3,25 +3,21 @@
 #include "image.h"
 #include "filepaths.h"
 #include "harrisCorner.h"
+#include "rgb.h"
+#include "grayscale.h"
 
 //TODO make filter work with rgb images, not urgent can be done later but will make overall code structure and moduarity better
 int main(){
-    Image leftImage("leftTest.png");
 
-    // Change this so image name path can be specified here and function will automatically join them
-    leftImage.checkImage("leftTest.png");
+    // Image leftImage("leftTest.png");
 
-    Image filteredImage = leftImage.filter(Image::FilterType::gaussian);
+    Rgb img("leftTest.png");
 
-    filteredImage.checkGrayImage("filteredImage.png");
+    img.outputImage("outputTest.png");
 
-    if (filteredImage.findCorners())
-    {
-        std::cout << "Corners found" << std::endl;
-    }
-    else{
-        std::cout << "No corners in image" << std::endl;
-    }
+    Grayscale grayImg = img.convertToGrayscale();
+
+    grayImg.outputImage("grayTest.png");
 
     return 0;
 

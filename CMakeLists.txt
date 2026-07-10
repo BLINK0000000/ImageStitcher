@@ -14,7 +14,9 @@ target_sources(ImageStitching
     PRIVATE
         src/main.cpp
         src/image.cpp
-        src/harrisCorner.cpp
+        #src/harrisCorner.cpp
+        src/grayscale.cpp
+        src/rgb.cpp
 
     PUBLIC
         FILE_SET HEADERS
@@ -25,7 +27,7 @@ target_sources(ImageStitching
             src/rgb.h
             src/grayscale.h
             src/filepaths.h
-            src/harrisCorner.h
+            #src/harrisCorner.h
 
 )
 

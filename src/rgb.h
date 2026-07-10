@@ -11,7 +11,6 @@ class Rgb : public Image{
         typedef Eigen::Tensor<uint8_t, 3> rgbImageTensor;
 
         Rgb(const char* imagePath); // constructor
-        ~Rgb(); //destructor
         Rgb(const Rgb& image); //copy constructor
         Rgb& operator=(const Rgb& image); // copy assignment operator
         
@@ -20,8 +19,11 @@ class Rgb : public Image{
 
         
         Grayscale convertToGrayscale();
-        rgbImageTensor boundaryPad();
-        void filter(FilterType filterToUse) override;
+        // rgbImageTensor boundaryPad();
+        // void filter(FilterType filterToUse) override;
+
+    private:
+        rgbImageTensor m_imgTensor;
 };
 
 #endif

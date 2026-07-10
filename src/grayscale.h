@@ -3,27 +3,29 @@
 
 #include "image.h"
 
+// corners should be separate to adhere to single responsibility. Feature finding should be responsiblity of another function not the image object
 class Grayscale : public Image{
     public:
         typedef Eigen::Matrix<uint8_t,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> GrayImageMatrix;
         
-        Grayscale(const char* imagePath); // constructor
-        ~Grayscale(); //destructor
+        Grayscale(const char* imageName); // constructor
+        Grayscale(Image& image, const int& channels, unsigned char* imgData);
+
+        // destructor uses Image class destructor
         Grayscale(const Grayscale& image); //copy constructor
         Grayscale& operator=(const Grayscale& image); // copy assignment operator
         
         Grayscale(Grayscale&& image) noexcept; // move constructor
-        Grayscale& operator=(Grayscale&& image); // move assignment operator
+        // Grayscale(Image&& image) noexcept; // move contructor from base class
 
-        GrayImageMatrix boundaryPad();
-        void filter(FilterType filterToUse) override;
-        bool findCorners();
+        Grayscale& operator=(Grayscale&& image); // move assignment operator
+        // Grayscale& operator=(Image&& image);
+
+        // GrayImageMatrix boundaryPad();
+        // void filter(FilterType filterToUse);
 
     private:
-         // use reserve with the total number of pixels
-        // then use push to add corners and shrink to fit after
-        // ^^ do this on the pi, no need to do it here
-        std::vector<HarrisCorner::CornerInfo> m_cornerList;
+        GrayImageMatrix m_imgMatrix;
 
 };
 #endif
