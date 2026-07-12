@@ -7,18 +7,17 @@
 #include "grayscale.h"
 
 //TODO make filter work with rgb images, not urgent can be done later but will make overall code structure and moduarity better
+// Only allows images with no transparency channel
 int main(){
-
-    // Image leftImage("leftTest.png");
 
     Rgb img("leftTest.png");
 
-    img.outputImage("outputTest.png");
-
     Grayscale grayImg = img.convertToGrayscale();
 
-    grayImg.outputImage("grayTest.png");
+    grayImg.filter(Image::FilterType::gaussian);
 
+    grayImg.outputImage("filter.png");
+    
     return 0;
 
 }

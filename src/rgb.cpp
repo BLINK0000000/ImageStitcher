@@ -1,5 +1,7 @@
 #include <iostream>
 #include "rgb.h"
+#include "filepaths.h"
+#include "stb_image_write.h"
 
 
 Rgb::Rgb(const char* imageName)
@@ -8,6 +10,42 @@ Rgb::Rgb(const char* imageName)
 {
     m_imgTensor.resize(m_height, m_width, 3);
     m_imgTensor = Eigen::TensorMap<rgbImageTensor, 0>(m_imageData, m_channels, m_height, m_width);
+}
+
+Rgb::Rgb(const Rgb& image)
+    : Image(image),
+      m_imgTensor{image.m_imgTensor}
+{
+
+}
+
+Rgb& Rgb::operator=(const Rgb& image)
+{
+    if (this != &image){
+        Image::operator=(image);
+
+        m_imgTensor = image.m_imgTensor;
+    }
+
+    return *this;
+}
+
+Rgb::Rgb(Rgb&& image) noexcept
+    : Image(std::move(image)),
+      m_imgTensor{std::move(image.m_imgTensor)}
+{
+
+}
+
+Rgb& Rgb::operator=(Rgb&& image) noexcept
+{
+    if (this != &image){
+        Image::operator=(std::move(image));
+
+        m_imgTensor = std::move(image.m_imgTensor);
+    }
+
+    return *this;
 }
 
 Grayscale Rgb::convertToGrayscale()
@@ -47,3 +85,9 @@ Grayscale Rgb::convertToGrayscale()
         return grayImg;
     } 
 }
+
+// void Rgb::outputRgb(const char* output)
+// {
+//     const fp::path outputPath = fp::imageTestsDir / output;
+//     stbi_write_png(outputPath.c_str(), m_width, m_height, m_channels, m_imgTensor.data(), m_width * m_channels);
+// }

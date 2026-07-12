@@ -15,12 +15,15 @@ class Rgb : public Image{
         Rgb& operator=(const Rgb& image); // copy assignment operator
         
         Rgb(Rgb&& image) noexcept; // move constructor
-        Rgb& operator=(Rgb&& image); // move assignment operator
+        Rgb& operator=(Rgb&& image) noexcept; // move assignment operator
 
-        
         Grayscale convertToGrayscale();
         // rgbImageTensor boundaryPad();
         // void filter(FilterType filterToUse) override;
+
+
+        // Testing functions
+        // void outputRgb(const char* output);
 
     private:
         rgbImageTensor m_imgTensor;

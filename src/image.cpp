@@ -71,15 +71,14 @@ Image::Image(const Image& image)
 Image::Image(const Image& image, const int channels, const unsigned char* imgData)
 {   
     m_channels = channels;
-    size_t imageSize{static_cast<size_t>(image.m_width * image.m_height * image.m_channels)};
+    m_height = image.m_height;
+    m_width = image.m_width;
+    
+    size_t imageSize{static_cast<size_t>(m_width * m_height * m_channels)};
 
     m_imageData = (unsigned char*)malloc(imageSize * sizeof(unsigned char));
 
-    memcpy(m_imageData, image.m_imageData, imageSize * sizeof(unsigned char));
-
-    m_height = image.m_height;
-    m_width = image.m_width;
-    m_channels = image.m_channels;
+    memcpy(m_imageData, imgData, imageSize * sizeof(unsigned char));
 }
 
 Image& Image::operator=(const Image& image)

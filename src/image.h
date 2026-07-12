@@ -25,7 +25,7 @@ class Image{
         Image(const char* imageName); // constructor
         ~Image(); //destructor
         Image(const Image& image); //copy constructor
-        Image(Image& image, const int channels = 0, const unsigned char* imgData = nullptr); // copy constructor for conversion
+        Image(const Image& image, const int channels, const unsigned char* imgData = nullptr); // copy constructor for conversion
         Image& operator=(const Image& image); // copy assignment operator
         
         Image(Image&& image) noexcept; // move constructor
@@ -37,11 +37,12 @@ class Image{
             gaussian,
         };
 
+
+
         // virtual void filter(FilterType filterToUse) = 0;  
 
         /*Testing Methods*/
         void outputImage(const char* output);
-        // void checkGrayImage(const char* output);
         
     protected:
         unsigned char* m_imageData;
